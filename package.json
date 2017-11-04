@@ -1,0 +1,14 @@
+{
+  "name": "naive-paypal-gateway",
+  "version": "1.0.0",
+  "description": "A simple and naive paypal gateway for simple payment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "plus-one-second"
+  ],
+  "author": "DemoHn",
+  "license": "ISC"
+}
