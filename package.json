@@ -10,5 +10,12 @@
     "plus-one-second"
   ],
   "author": "DemoHn",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "braintree": "^2.3.0",
+    "koa": "^2.3.0",
+    "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1",
+    "sqlite3": "^3.1.13"
+  }
 }

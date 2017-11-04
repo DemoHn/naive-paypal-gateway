@@ -1,0 +1,10 @@
+{
+    "paypal": {
+        "token": ""
+    },
+    "braintree": {
+        "merchantId": "",
+        "publicKey": "",
+        "privateKey": ""
+    }
+}
