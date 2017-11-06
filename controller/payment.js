@@ -1,9 +1,15 @@
 const utils = require("../utils");
 const CustomerInfo = require("../validation/customerInfo");
 const CredtiCardInfo = require("../validation/creditcardInfo");
+const PayPalInterface = require("../interface/paypal");
+const BrainTreeInterface = require("../interface/braintree");
 
+// Notice: it will be cached in memory after creation!
 let customerInfo = new CustomerInfo();
 let creditcardInfo = new CredtiCardInfo();
+
+let paypalInterface = new PayPalInterface("sandbox");
+let braintreeInterface = new BrainTreeInterface("sandbox");
 
 module.exports = {
     /**
@@ -59,6 +65,11 @@ module.exports = {
     },
 
     async submit() {
+        
+    },
 
+    async a() {
+        let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
+        return result;
     }
 }

@@ -72,6 +72,11 @@ router.post("/submit_payment", async (ctx) => {
     }
 });
 
+router.get("/ss", async (ctx) => {
+    let result = await paymentController.a();
+    ctx.body = utils.json_success(result);
+});
+
 // static file
 app.use(static(
     path.join(__dirname, "static")

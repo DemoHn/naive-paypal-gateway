@@ -1,5 +1,7 @@
 const braintree = require("braintree"),
-      utils     = require("../utils");
+      utils     = require("../utils"),
+      CreditcardInfo = require("../validation/creditcardInfo"),
+      CustomerInfo = require("../validation/customerInfo");
 
 class BrainTreeInterface {
     constructor(env, timeout){
@@ -56,26 +58,55 @@ class BrainTreeInterface {
         Thus when call them in Koa, don't forget to add "await".
     */
 
-    // create an transaction (that is, make a payment)
-    sale(amount) {
-        let self = this;
+    // create a payment
+    async createPayment(customerInfo, creditcardInfo) {
+        // assert input
+        if(!customerInfo instanceof CustomerInfo) {
+            return Promise.reject(new Error("invalid customerInfo"));
+        }
+
+        if(!creditcardInfo instanceof CreditcardInfo) {
+            return Promise.reject(new Error("invalid creditCard"));
+        }
+
+        let customer = customerInfo.export();
+        let creditcard = creditcardInfo.export();
+
+        if(customer == null || creditcard == null)
+        {
+            return Promise.reject(new Error("invalid customer or credit card data!"));
+        }
+
+        let first_two_letter_year = Math.floor((new Date()).getFullYear() / 100);
         let options = {
-            "amount": amount,
-            // TODO
-        };
-        return new Promise((resolve, reject) => {
-            try {
-                self.gateway.transaction.sale(options, (result, err) => {
-                    if(result.success) {
-                        resolve();
-                    } else {
-                        reject(err);
-                    }
-                });
-            } catch(e) {
-                reject(e);
+            amount: customer.amount,
+            creditCard: {
+                cardholderName: creditcard.holder_name,
+                number: creditcard.card_number,
+                expirationDate: `${creditcard.expire.month}/${first_two_letter_year}${creditcard.expire.year}`,
+                cvv: creditcard.security_code,
+            },
+            customer: {
+                firstName: customer.name.first_name,
+                lastName: customer.name.last_name,
+                phone: `${customer.phone.country_code}-${customer.phone.phone_number}`
+            },
+            options: {
+                submitForSettlement: true
             }
-        })
+        };
+    
+        try {
+            this.gateway.transaction.sale(options, (result, err) => {
+                if(result.success) {
+                    return Promise.resolve(result);
+                } else {
+                    return Promise.reject(err);
+                }
+            });
+        } catch(e) {
+            return Promise.reject(e);
+        }
     }
 };
 

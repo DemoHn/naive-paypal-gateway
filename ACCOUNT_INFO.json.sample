@@ -1,6 +1,7 @@
 {
     "paypal": {
-        "token": ""
+        "client_id": "",
+        "secret": ""
     },
     "braintree": {
         "merchantId": "",
