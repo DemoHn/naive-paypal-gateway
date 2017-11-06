@@ -62,20 +62,23 @@ router.post("/submit_payment", async (ctx) => {
         req_body = {};
     }
 
-    let result = await paymentController.validate_payment_info(req_body);
-    if(result != null) {
-        ctx.body = utils.json_error(600, result);
-        return ;
-    } else {
-        // continue
-        ctx.body = utils.json_success("validation success");
+    try {
+        let result = await paymentController.validate_payment_info(req_body);
+
+        if(result != null) {
+            ctx.body = utils.json_error(600, result);
+            return ;
+        } else {
+            // continue
+            let submit_info = await paymentController.submit();
+            ctx.body = utils.json_success("submit success");
+        }
+    } catch(e) {
+        console.log(e);
+        ctx.body = utils.json_error(500, "Fatal Error");
     }
 });
 
-router.get("/ss", async (ctx) => {
-    let result = await paymentController.a();
-    ctx.body = utils.json_success(result);
-});
 
 // static file
 app.use(static(

@@ -62,11 +62,11 @@ class BrainTreeInterface {
     async createPayment(customerInfo, creditcardInfo) {
         // assert input
         if(!customerInfo instanceof CustomerInfo) {
-            return Promise.reject(new Error("invalid customerInfo"));
+            return new Promise((resolve, reject) => { reject(new Error("invalid customerInfo")) } );
         }
 
         if(!creditcardInfo instanceof CreditcardInfo) {
-            return Promise.reject(new Error("invalid creditCard"));
+            return new Promise((resolve, reject) => { reject(new Error("invalid CreditCard")) } );
         }
 
         let customer = customerInfo.export();
@@ -74,12 +74,12 @@ class BrainTreeInterface {
 
         if(customer == null || creditcard == null)
         {
-            return Promise.reject(new Error("invalid customer or credit card data!"));
+            return new Promise((resolve, reject) => { reject(new Error("invalid input!")) } );
         }
 
         let first_two_letter_year = Math.floor((new Date()).getFullYear() / 100);
         let options = {
-            amount: customer.amount,
+            amount: customer.price,
             creditCard: {
                 cardholderName: creditcard.holder_name,
                 number: creditcard.card_number,
@@ -96,17 +96,20 @@ class BrainTreeInterface {
             }
         };
     
-        try {
-            this.gateway.transaction.sale(options, (result, err) => {
-                if(result.success) {
-                    return Promise.resolve(result);
-                } else {
-                    return Promise.reject(err);
-                }
-            });
-        } catch(e) {
-            return Promise.reject(e);
-        }
+        return new Promise((resolve, reject) => {
+            try {
+                this.gateway.transaction.sale(options, (result, err) => {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            } catch(e) {
+                reject(e);
+            }
+        })
+        
     }
 };
 

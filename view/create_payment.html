@@ -14,11 +14,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js"></script>
 
-    <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-</script>
+    <script src="js/main.js"></script>
+
+    <style>
+
+    .invalid-hint {
+        display: hidden;
+        margin-top: 0.3rem;
+        color: red;
+        font-size: 13px;
+    }
+    .invalid input[type="text"] {
+        border-color: red;
+    }
+
+    .invalid .invalid-hint {
+        display: block;
+    }
+    </style>
 </head>
 
 <body>
@@ -44,28 +57,30 @@
         <h2>Create Payment</h2>
         <p></p>
         <div class="card">
-            <div class="card-body">
+            <div class="card-body" id="customer_info">
                 <h5 style="color: #666;">Customer Info</h5>
                 <form>
                     <div class="form-group row">
                         <label for="first_name" class="col-sm-2 col-form-label">First Name</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="first_name" value="" placeholder="First Name">
+                        <div class="col-sm-4" :class="{invalid: !first_name.valid}">
+                            <input type="text" class="form-control" id="first_name" v-model="first_name.data" placeholder="First Name">
+                            <div class="invalid-hint">{{ first_name.v_hint }}</div>
                         </div>
 
                         <label for="last_name" class="col-sm-2 col-form-label">Last Name</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="last_name" value="" placeholder="Last Name">
+                        <div class="col-sm-4" :class="{invalid: !last_name.valid}">
+                            <input type="text" class="form-control" id="last_name" v-model="last_name.data" placeholder="Last Name">
+                            <div class="invalid-hint">{{ last_name.v_hint }}</div>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="" class="col-sm-2 col-form-label">Phone Number</label>
-                        <div class="col-sm-5">
+                        <div class="col-sm-5" :class="{invalid: !phone_number.valid}">
                             <div class="input-group">
-                                <div class="input-group-btn">
-                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Hong Kong (+852)
+                                <div class="input-group-btn" id="country_code_btn">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle" :data-country-value="country_code" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ country_code_text }}
                                     </button>
                                     <div class="dropdown-menu" style="overflow: auto; height: 30em;">
                                         <a class="dropdown-item" href="#" data-countryCode="HK" value="852" selected>Hong Kong (+852)</a>
@@ -287,18 +302,19 @@
                                         <a class="dropdown-item" href="#" data-countryCode="ZW" value="263">Zimbabwe (+263)</a>
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" placeholder="Phone number">
+                                <input type="text" class="form-control" placeholder="Phone number" v-model="phone_number.data">
                             </div>
+                            <div class="invalid-hint">{{ phone_number.v_hint }}</div>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="" class="col-sm-2 col-form-label">Price</label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-4" :class="{invalid: !price.valid}">
                             <div class="input-group">
-                                <div class="input-group-btn">
+                                <div class="input-group-btn" id="price_btn">
                                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        HKD
+                                        {{currency}}
                                     </button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="#">HKD</a>
@@ -309,37 +325,62 @@
                                         <a class="dropdown-item" href="#">CNY</a>                                        
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Amount">
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Amount" v-model="price.data">
                             </div>
+                            <div class="invalid-hint">{{ price.v_hint }}</div>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
         <p></p>
-        <div class="card">
+        <div class="card" id="credit_card_info">
             <div class="card-body">
                 <h5 style="color: #666;">Credit Card Info</h5>
 
                 <form>
                     <div class="form-group row">
                         <label for="holder_name" class="col-sm-2 col-form-label">Card Holder Name</label>
-                        <div class="col-sm-5">
-                            <input type="text" class="form-control" id="holder_name" value="" placeholder="Same as name on credit card">
+                        <div class="col-sm-5" :class="{invalid: !holder_name.valid }">
+                            <input type="text" class="form-control" id="holder_name" v-model="holder_name.data" placeholder="Same as name on credit card">
+                            <div class="invalid-hint">{{ holder_name.v_hint }}</div>
                         </div>    
                     </div>
                     
                     <div class="form-group row">
                         <label for="card_number" class="col-sm-2 col-form-label">Card Number</label>
-                        <div class="col-sm-5">
-                            <input type="text" class="form-control" id="card_number" value="" placeholder="13-18 digits">
+                        <div class="col-sm-5" :class="{invalid: !card_number.valid }">
+                            <input type="text" class="form-control" id="card_number" v-model="card_number.data" placeholder="13-18 digits">
+                            <div class="invalid-hint">{{ card_number.v_hint }}</div>
                         </div>    
                     </div>
 
                     <div class="form-group row">
                         <label for="expire" class="col-sm-2 col-form-label">Expire at</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="expire" value="" placeholder="MM / YY">
+                        <div class="col-sm-5">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{expire_month.data}}
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#" v-for="item in valid_months" @click="change_month(item)">{{item}}</a>
+                                </div>
+                            </div>
+                            <span style="margin-left: 0.5rem; margin-right: 0.5rem; "> / </span>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{expire_year.data}}
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#" v-for="item in valid_years" @click="change_year(item)">{{item}}</a>
+                                </div>
+                            </div>
+                            <div :class="{invalid: !expire_month.valid}">
+                                <div class="invalid-hint">{{expire_month.v_hint}}</div>
+                            </div>
+                            <div :class="{invalid: !expire_year.valid}">
+                                <div class="invalid-hint">{{expire_year.v_hint}}</div>
+                            </div>
                         </div>    
                     </div>
 
@@ -347,8 +388,9 @@
                         <label for="expire" class="col-sm-2 col-form-label">CCV 
                             <sup><span class="oi oi-info" style="color: blue; cursor: pointer;" data-toggle="tooltip" data-placement="bottom" title="Usually CCV is located in your credit card's B side."></span></sup>
                         </label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="expire" value="" placeholder="3~4 digits">
+                        <div class="col-sm-2" :class="{invalid: !security_code.valid }">
+                            <input type="text" class="form-control" id="expire" v-model="security_code.data" placeholder="3~4 digits">
+                            <div class="invalid-hint">{{ security_code.v_hint }}</div>
                         </div>    
                     </div>
                 </form>
@@ -357,7 +399,10 @@
         <p></p>
         <div class="card" style="border: none;">
             <div class="card-body">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Submit</button>
+                <div id="submit_button_div">
+                    <button v-if="state == 'ready'" class="btn btn-primary" @click="submit_payment">Submit</button>
+                    <button v-if="state == 'processing'"  class="btn btn-secondary" @click="submit_payment" disabled>Processing...</button>
+                </div>
             </div>
         </div>
     </div>

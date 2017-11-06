@@ -29,7 +29,7 @@ module.exports = {
      *      security_code: ""
      * }
      * 
-     * @return null or validation error objec
+     * @return null or validation error object
     */
     async validate_payment_info(payload) {
 
@@ -65,11 +65,14 @@ module.exports = {
     },
 
     async submit() {
-        
-    },
-
-    async a() {
-        let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
-        return result;
+        // TODO: add paypal support
+        return new Promise((resolve, reject) => {
+            try {
+                let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
+                resolve(result);
+            } catch(e) {
+                reject(e);
+            }
+        });
     }
 }

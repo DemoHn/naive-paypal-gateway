@@ -65,6 +65,10 @@ class CreditCardInfo {
         this.validation_errors = {};
     }
 
+    static get cardTypes() {
+        return creditCardTypes;
+    }
+    
     _set_validation_error(key, value) {
         this.validation_errors[key] = value;
     }
@@ -180,6 +184,10 @@ class CreditCardInfo {
                 this.card_number = _card_number;
             }
         }
+    }
+
+    get_card_type(){
+        return this._card_type;
     }
 
     set_expire_month(month) {
