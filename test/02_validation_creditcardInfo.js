@@ -215,7 +215,6 @@ describe('Form Validation: Credit Card Info', () => {
         });
     });
 
-
     describe("Security Code", () => {
 
         it("should trigger error: empty", (done) => {
@@ -288,5 +287,5 @@ describe('Form Validation: Credit Card Info', () => {
 
     after(() => {
         server.close();
-    })
+    });
 });

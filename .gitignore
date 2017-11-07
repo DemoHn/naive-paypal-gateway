@@ -1,2 +1,3 @@
 node_modules/
+db/customer_info.db
 ACCOUNT_INFO.json

@@ -65,22 +65,20 @@ class PayPalInterface {
         let resp = null;
         let self = this;
 
-        return new Promise((resolve, reject) => {
-            try {
-                resp = await request(options);    
-                let resp_json = JSON.parse(resp);
-    
-                self.accessToken = {
-                    "access_token": resp_json["access_token"],
-                    "app_id": resp_json["app_id"],
-                    "expire_in": resp_json["expire"]
-                };
-    
-                resolve(resp_json);
-            } catch(e) {
-                reject(e);
-            }
-        });
+        try {
+            resp = await request(options);    
+            let resp_json = JSON.parse(resp);
+
+            self.accessToken = {
+                "access_token": resp_json["access_token"],
+                "app_id": resp_json["app_id"],
+                "expire_in": resp_json["expire"]
+            };
+
+            Promise.resolve(resp_json);
+        } catch(e) {
+            Promise.reject(e);
+        }
     }
 
     async createPayment() {

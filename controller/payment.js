@@ -66,13 +66,16 @@ module.exports = {
 
     async submit() {
         // TODO: add paypal support
-        return new Promise((resolve, reject) => {
-            try {
-                let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
-                resolve(result);
-            } catch(e) {
-                reject(e);
-            }
-        });
+        try {
+            let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
+            return Promise.resolve(result);
+            //customerInfo.dispose();
+            //creditcardInfo.dispose(); // clear data in memory
+        } catch(e) {
+            return Promise.reject(e);
+            //customerInfo.dispose();
+            //creditcardInfo.dispose(); // clear data in memory
+        }
+    
     }
 }

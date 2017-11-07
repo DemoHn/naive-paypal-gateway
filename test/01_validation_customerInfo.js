@@ -295,5 +295,5 @@ describe('Form Validation: Customer Info', () => {
 
     after(() => {
         server.close();
-    })
+    });
 });
