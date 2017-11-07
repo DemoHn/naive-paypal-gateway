@@ -1,12 +1,12 @@
 const utils = require("../utils");
-const CustomerInfo = require("../validation/customerInfo");
-const CredtiCardInfo = require("../validation/creditcardInfo");
+const CustomerInfoValidator = require("../validation/customerInfo");
+const CredtiCardInfoValidator = require("../validation/creditcardInfo");
 const PayPalInterface = require("../interface/paypal");
 const BrainTreeInterface = require("../interface/braintree");
 
 // Notice: it will be cached in memory after creation!
-let customerInfo = new CustomerInfo();
-let creditcardInfo = new CredtiCardInfo();
+let customerInfo = new CustomerInfoValidator();
+let creditcardInfo = new CredtiCardInfoValidator();
 
 let paypalInterface = new PayPalInterface("sandbox");
 let braintreeInterface = new BrainTreeInterface("sandbox");

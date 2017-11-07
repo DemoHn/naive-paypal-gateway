@@ -202,7 +202,7 @@ $(function(){
                 merged_payload = $.extend(customer_info.export(), credit_card_info.export());
                 
                 var that = this;
-                $.post("/submit_payment", merged_payload, null, "json").done(function(data){
+                $.post("/api/submit_payment", merged_payload, null, "json").done(function(data){
                     that.state = btnState.READY;
 
                     if(data.code == 200) {

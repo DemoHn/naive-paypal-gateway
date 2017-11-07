@@ -22,7 +22,7 @@ class OrderInfo {
         this.ref_code = "";
         this.order_status = orderStatus.SUCCESS;
         this.name = `${this._first_name} ${this._last_name}`;
-        this.phone = `${this._country_code}-${this._phone_number}`;
+        this.phone = `(+${this._country_code}) ${this._phone_number}`;
         this.price = `${this._currency} ${this._price}`;
     }
 

@@ -109,7 +109,6 @@ class BrainTreeInterface {
                 reject(e);
             }
         })
-        
     }
 };
 

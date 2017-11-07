@@ -78,5 +78,5 @@ describe('Store Data to redis', () => {
 
     after(async () => {
         await storeController.flushAll();
-    })
+    });
 });

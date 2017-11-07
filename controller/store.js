@@ -3,6 +3,8 @@ const redis     = require("redis");
 const Datastore = require("nedb");
 const path      = require("path");
 
+
+// global variables
 /** if there's any problem, let it crash at beginning */
 // redis configuration
 let client = redis.createClient();
@@ -12,6 +14,7 @@ client.on("error", (e) => {
 
 // nedb configuration
 let db = new Datastore({filename: path.join(__dirname, "../db", "customer_info.db") })
+
 
 const REF_prefix = "REF_";
 const NAME_prefix = "NAME_";
@@ -46,7 +49,7 @@ const storeRedisData = {
             if(! info instanceof OrderInfo) {
                 reject(new Error("invalid input!"));
             }
-            client.lpush([NAME_prefix + info.name, REF_prefix + info.ref_code], (err, replies) => {
+            client.lpush([NAME_prefix + info.name, info.ref_code], (err, replies) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -62,7 +65,7 @@ const storeRedisData = {
                 reject(new Error("invalid input!"));
             }
             
-            client.sadd(["ALL_name", NAME_prefix + info.name], (err, replies) => {
+            client.sadd(["ALL_name", info.name], (err, replies) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -78,7 +81,7 @@ const storeRedisData = {
                 reject(new Error("invalid input!"));
             }
             
-            client.sadd(["ALL_ref_code", REF_prefix + info.ref_code], (err, replies) => {
+            client.sadd(["ALL_ref_code", info.ref_code], (err, replies) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -121,7 +124,7 @@ const findRedisData = {
 
     async get_item_by_ref_code(ref_code) {
         return new Promise((resolve, reject) => {
-            client.hgetall([ref_code], (err, replies) => {
+            client.hgetall([REF_prefix + ref_code], (err, replies) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -133,7 +136,7 @@ const findRedisData = {
 
     async get_ref_code_list_by_name(name) {
         return new Promise((resolve, reject) => {
-            client.lrange([name, 0, -1], (err, replies) => {
+            client.lrange([NAME_prefix + name, 0, -1], (err, replies) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -155,7 +158,6 @@ const findRedisData = {
         });
     }
 }
-
 
 /** acutal methods */
 module.exports = {
@@ -188,12 +190,10 @@ module.exports = {
 
             for(let index in ref_code_list) {
                 let ref_code = ref_code_list[index];
-                // remove prefix "REF_";
-                let true_ref_code = ref_code.substr(REF_prefix.length);
 
                 let r = await findRedisData.get_item_by_ref_code(ref_code);
                 
-                data_list.data[true_ref_code] = r;
+                data_list.data[ref_code] = r;
             }
             
             return Promise.resolve(data_list);
@@ -244,13 +244,10 @@ module.exports = {
                 // extract data from ref_code
                 for(let index in ref_code_list) {
                     let ref_code = ref_code_list[index];
-                    // remove prefix "REF_";
-
-                    let true_ref_code = ref_code.substr(REF_prefix.length);
 
                     let r = await findRedisData.get_item_by_ref_code(ref_code);
                     
-                    data_list.data[true_ref_code] = r;
+                    data_list.data[ref_code] = r;
                 }
 
                 return Promise.resolve(data_list);
@@ -265,13 +262,10 @@ module.exports = {
                 // extract data from ref_code
                 for(let index in ref_code_list) {
                     let ref_code = ref_code_list[index];
-                    // remove prefix "REF_";
-
-                    let true_ref_code = ref_code.substr(REF_prefix.length);
 
                     let r = await findRedisData.get_item_by_ref_code(ref_code);
                     
-                    data_list.data[true_ref_code] = r;
+                    data_list.data[ref_code] = r;
                 }
 
                 return Promise.resolve(data_list);
@@ -294,6 +288,4 @@ module.exports = {
             })
         });
     }
-    // TODO
-    // removeData
 };

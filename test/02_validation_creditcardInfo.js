@@ -15,7 +15,7 @@ describe('Form Validation: Credit Card Info', () => {
 
     describe("Holder Name", () => {
         it("should trigger error: invalid character", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"holder_name": "香港记者ABCD"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -26,7 +26,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: empty", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"holder_name": ""})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -40,7 +40,7 @@ describe('Form Validation: Credit Card Info', () => {
             let long_text = "";
             for(let i=0;i<70;i++) { long_text += "f"; }
 
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"holder_name": long_text})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -52,7 +52,7 @@ describe('Form Validation: Credit Card Info', () => {
 
         it("should pass validation check", (done) => {
         
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"holder_name": "X.IANGG-ANG O'JIZHE"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -65,7 +65,7 @@ describe('Form Validation: Credit Card Info', () => {
 
     describe("Card Number", () => {
         it("should trigger error: empty", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"card_number": ""})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -76,7 +76,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
         
         it("should trigger error: wrong checksum", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"card_number": "429392341029333"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -87,7 +87,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: too long", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"card_number": "429392341029333238428432"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -99,7 +99,7 @@ describe('Form Validation: Credit Card Info', () => {
 
         
         it("should trigger error: too short", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"card_number": "4233"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -110,7 +110,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: invalid characters", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"card_number": "4233ADF328FFF"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -121,7 +121,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should pass validation check", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"card_number": "4539337695024479"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -134,7 +134,7 @@ describe('Form Validation: Credit Card Info', () => {
 
     describe("Expire Month", () => {
         it("should trigger error: invalid input", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_month": "98"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -145,7 +145,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: empty", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_month": ""})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -157,7 +157,7 @@ describe('Form Validation: Credit Card Info', () => {
 
         it("should pass validation check", (done) => {
             
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_month": "12"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -170,7 +170,7 @@ describe('Form Validation: Credit Card Info', () => {
 
     describe("Expire Year", () => {
         it("should trigger error: invalid input", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_year": "98"}) // 2017 + 10 < 2098
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -181,7 +181,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
         
         it("should trigger error: invalid input", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_year": "02"}) // 2017 + 10 < 2098
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -192,7 +192,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: empty", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_year": ""})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -204,7 +204,7 @@ describe('Form Validation: Credit Card Info', () => {
 
         it("should pass validation check", (done) => {
             
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"expire_year": "19"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -218,7 +218,7 @@ describe('Form Validation: Credit Card Info', () => {
     describe("Security Code", () => {
 
         it("should trigger error: empty", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"security_code": ""})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -229,7 +229,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: invalid charcters", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"security_code": "AF3"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -240,7 +240,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: VISA 4-digits", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"security_code": "3439", "card_number": "4556581839245890"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -251,7 +251,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
 
         it("should trigger error: AMEX 3-digits", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"security_code": "983", "card_number": "373048037490065"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -262,7 +262,7 @@ describe('Form Validation: Credit Card Info', () => {
         });
         
         it("should trigger error: OTHERS 5-digits", (done) => {
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"security_code": "98382", "card_number": "6011943062891069"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);
@@ -274,7 +274,7 @@ describe('Form Validation: Credit Card Info', () => {
 
         it("should pass validation check", (done) => {
             
-            request.post("/submit_payment")
+            request.post("/api/submit_payment")
             .send({"security_code": "1945", "card_number": "347849542448024"})
             .expect(200).expect(function(res){
                 data = JSON.parse(res.text);

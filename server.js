@@ -6,6 +6,9 @@ const Koa    = require("koa"),
       bodyParser = require('koa-bodyparser');
 
 const paymentController = require("./controller/payment"),
+      storeController   = require("./controller/store"),
+      searchPaymentController = require("./controller/search"),
+
       utils = require("./utils");
 
 const app = new Koa(),
@@ -53,8 +56,8 @@ router.get('/404', async (ctx) => {
     ctx.body = await render("404");
 });
 
-// payment route
-router.post("/submit_payment", async (ctx) => {
+// API
+router.post("/api/submit_payment", async (ctx) => {
     // TODO
     let req_body = ctx.request.body;
 
@@ -79,6 +82,46 @@ router.post("/submit_payment", async (ctx) => {
     }
 });
 
+// check payment info
+/** GET /search_payment_record
+ * 
+ * Notice: if search_keyword is null, then list all payment records.
+ * @param search_keyword search keyword
+ * @param search_type search type
+ * @param cursor cursor
+ * @param limit limit
+*/
+router.get("/api/search_payment_record", async (ctx) => {
+    let cursor = ctx.query.cursor == null ? "0" : ctx.query.cursor;
+    let search_keyword = ctx.query.search_keyword == null ? "" : ctx.query.search_keyword;
+    let limit = ctx.query.limit == null ? 10 : ctx.query.limit;
+    let search_type = ctx.query.search_type;
+
+    let payload = {
+        search_keyword: search_keyword,
+        search_type: search_type
+    };
+
+    try {
+        let result = await searchPaymentController.validateSearchParams(payload);
+
+        if(result != null) {
+            ctx.body = utils.json_error(600, result);
+        } else {
+            if(search_keyword == "") {
+                // list all data
+                let data = await storeController.listData(cursor, limit);
+                ctx.body = utils.json_success(data);
+            } else if(search_type === "name" || search_type === "ref_code") {
+                let data = await storeController.findData(search_type, search_keyword, cursor, limit);
+                ctx.body = utils.json_success(data);
+            } 
+        }
+    } catch (error) {
+        console.log(error);
+        ctx.body = utils.json_error(500, "Fatal Error!");
+    }
+});
 
 // static file
 app.use(static(

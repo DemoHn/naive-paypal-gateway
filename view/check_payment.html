@@ -5,14 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Check Payment</title>
-    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js"></script>
+
+    <script src="/js/check_payment.js"></script>
+    <style>
+        .invalid-hint {
+            display: hidden;
+            margin-top: 0.3rem;
+            color: red;
+            font-size: 13px;
+        }
+        .invalid input[type="text"] {
+            border-color: red;
+        }
+
+        .invalid .invalid-hint {
+            display: block;
+        }
+
+        .error-hint {
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            font-size: 24px;
+            color: #888;
+        }
+
+        .see_more{
+            text-align: center;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 15px;
+        }
+    </style>
+
 </head>
 <body>
-    <nav class="navbar navbar-light">
-        <a href="#" class="navbar-brand">Naive Paypal Gateway</a>
-    </nav>       
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Naive Payment Gateway</a>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Create Payment</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/check_payment">Check Payment</a>
+                </li>
+            </ul>
+        </div>
+    </nav>     
+
+    <!-- content -->
+    <div class="container">
+        <p></p>
+        <h2>Check Payment</h2>
+        <p></p>
+
+        <div id="check_payment_form">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label"><b>Search By:</b></label>
+
+                        <div class="col-sm-6" :class="{valid: !search_type.valid}">
+                            <label class="custom-control custom-radio" style="margin-top: 0.5rem;" selected>
+                                <input id="radio1" name="radio" type="radio" class="custom-control-input" @click="change_search_type('name')">
+                                <span class="custom-control-indicator"></span>
+                                <span class="custom-control-description">Customer Name</span>
+                            </label>
+                            <label class="custom-control custom-radio" style="margin-top: 0.5rem;">
+                                <input id="radio2" name="radio" type="radio" class="custom-control-input" @click="change_search_type('ref_code')">
+                                <span class="custom-control-indicator"></span>
+                                <span class="custom-control-description">Reference Code</span>
+                            </label>
+
+                            <div class="invalid-hint">{{ search_type.v_hint }}</div>
+                        </div>
+                    
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-sm-2 col-form-label"><b>Keyword:</b></label>
+                        <div class="col-sm-4" :class="{valid: !search_keyword.valid}">
+                            <input type="text" class="form-control" placeholder="Keyword" v-model="search_keyword.data">
+                        
+                            <div class="invalid-hint">{{ search_keyword.v_hint }}</div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary" style="cursor: pointer;" @click="execute_search">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p></p> <!-- space-->
+            <div class="table-content">
+                <table class="table" v-if="record_status == 2">
+                    <thead>
+                        <tr>
+                            <th scope="col">Reference Code</th>
+                            <th scope="col">Customer Name</th>
+                            <th scope="col">Customer Phone</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in payment_records">
+                            <td>{{ item.ref_code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.phone }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.order_status == 1 ? "FAIL" : "SUCCESS" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="error-hint" v-if="record_status == 1">Loading... </div>
+                <div class="error-hint" v-if="record_status == -1">No Payment Record</div>
+
+                <div>
+                    <div class="error-hint" v-if="more_record_status == 1">Loading... </div>
+                    <div class="see_more"  v-if="more_record_status == 2"><a href="#" @click="see_more">See More</a></div>
+                    <div class="error-hint" v-if="more_record_status == -1">No More Record</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

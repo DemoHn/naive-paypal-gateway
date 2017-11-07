@@ -1,7 +1,7 @@
 /**
  * Validation Check for user-input credit card value
  * Only all values are checked successfully will export customer info.
- * Otherwise, Exceptions will throw out.
+ * Otherwise, validation error is set.
  */
 
 const utils = require("../utils");
@@ -50,8 +50,6 @@ const errors = {
 }
 class CreditCardInfo {
     constructor() {
-        this.valid = false;
-
         /* data structure for customer info*/
         this.holder_name = ""; // Credit Holder's Name, type: string
         this.card_number = "" // type: string
