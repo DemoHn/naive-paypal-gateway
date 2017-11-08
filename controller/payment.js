@@ -67,7 +67,8 @@ module.exports = {
     async submit() {
         // TODO: add paypal support
         try {
-            let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
+            //let result = await braintreeInterface.createPayment(customerInfo, creditcardInfo);
+            let result = await paypalInterface.createPayment(customerInfo, creditcardInfo);
             return Promise.resolve(result);
             //customerInfo.dispose();
             //creditcardInfo.dispose(); // clear data in memory

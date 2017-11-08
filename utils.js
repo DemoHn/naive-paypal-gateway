@@ -13,6 +13,8 @@ const errors_dict = {
 let test_flag = false;
 let ref_code_index = 0;
 
+let PORT = 3862;
+
 module.exports = {
     load_config_file() {
         const account_info_config = path.join(__dirname, "ACCOUNT_INFO.json");
@@ -87,5 +89,13 @@ module.exports = {
 
     get_test_flag() {
         return test_flag;
+    },
+
+    set_PORT(port) {
+        PORT = port;
+    },
+
+    get_PORT() {
+        return PORT;
     }
 }
