@@ -1,5 +1,6 @@
 const expect = require('chai').expect;
 const OrderInfo = require("../model/orderInfo");
+const CustomerInfo = require("../validation/customerInfo");
 const storeController = require("../controller/store");
 const utils = require("../utils");
 
@@ -10,14 +11,13 @@ describe('Store Data to redis', () => {
     // start server
     before(async () => {
         for(let i = 0; i < 10; i++) {
-            let info = new OrderInfo(
-                "FIRST",
-                "LAST",
-                "86",
-                "12812345678",
-                "HKD",
-                "123.4"
-            );
+            let customerInfo = new CustomerInfo();
+            customerInfo.set_first_name("FIRST");
+            customerInfo.set_last_name("LAST");
+            customerInfo.set_phone("86", "12812345678");
+            customerInfo.set_price_amount("HKD", "123.4");
+            let info = new OrderInfo(customerInfo);
+
             info.set_order_status(OrderInfo.orderStatus.SUCCESS);
             last_ref_code = utils.generate_ref_code();
             info.set_ref_code(last_ref_code);
@@ -26,14 +26,13 @@ describe('Store Data to redis', () => {
         }
 
         for(let i = 0; i < 10; i++) {
-            let info_hk = new OrderInfo(
-                "香港",
-                "记者",
-                "852",
-                "12345678",
-                "HKD",
-                "1.4"
-            );
+            let customerInfo = new CustomerInfo();
+            customerInfo.set_first_name("香港");
+            customerInfo.set_last_name("记者");
+            customerInfo.set_phone("852", "12345678");
+            customerInfo.set_price_amount("USD", "1.4");
+            let info_hk = new OrderInfo(customerInfo);
+            
             info_hk.set_order_status(OrderInfo.orderStatus.SUCCESS);
             last_ref_code = utils.generate_ref_code();
             info_hk.set_ref_code(last_ref_code);

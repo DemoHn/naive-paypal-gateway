@@ -79,7 +79,7 @@ router.post("/api/submit_payment", async (ctx) => {
         if(result != null) {
             ctx.body = utils.json_error(600, result);
         } else if( !paymentController.validateAMEXinUSDrule() ) { 
-            ctx.body = utils.json_error(601, ""); // using AMEX card but not in USD
+            ctx.body = utils.json_error(601, "AMEX Error"); // using AMEX card but not in USD
         } else {
             // continue
             // init REF code

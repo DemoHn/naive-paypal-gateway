@@ -1,6 +1,6 @@
 const OrderInfo = require("../model/orderInfo");
 const redis     = require("redis");
-const Datastore = require("nedb");
+//const Datastore = require("nedb");
 const path      = require("path");
 
 
@@ -13,8 +13,7 @@ client.on("error", (e) => {
 });
 
 // nedb configuration
-let db = new Datastore({filename: path.join(__dirname, "../db", "customer_info.db") })
-
+//let db = new Datastore({filename: path.join(__dirname, "../db", "customer_info.db") })
 
 const REF_prefix = "REF_";
 const NAME_prefix = "NAME_";
