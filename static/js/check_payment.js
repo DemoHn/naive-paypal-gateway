@@ -37,6 +37,18 @@ $(function() {
                 this.search_type.valid = true;
                 this.search_type.v_hint = "";
             },
+            order_status_text: function(order_status) {
+                switch(order_status) {
+                    case "0":
+                        return "SUCCESS";
+                    case "1":
+                        return "FAIL";
+                    case "2":
+                        return "PENDING";
+                    default:
+                        return "PENDING";
+                }
+            },
 
             load_validation_errors: function(errors) {
                 var keys = ["search_keyword", "search_type"];

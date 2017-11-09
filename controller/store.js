@@ -275,6 +275,31 @@ module.exports = {
         }
     },
 
+    async modifyDictData(ref_code, key, new_data) {
+        return new Promise((resolve, reject) => {
+            client.hset([REF_prefix + ref_code, key, new_data], (err, replies) => {
+                console.log(err);
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(null);
+                }
+            })
+        });
+    },
+
+    async getDictData(ref_code) {
+        return new Promise((resolve, reject) => {
+            client.hgetall([REF_prefix + ref_code], (err, replies) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(replies);
+                }
+            })
+        });
+    },
+
     // clear all data in redis
     // Just for test usage, If not necessary, plz DO NOT try
     async flushAll() {

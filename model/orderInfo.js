@@ -2,7 +2,8 @@ const utils = require("../utils");
 
 const orderStatus = {
     SUCCESS: 0,
-    FAIL: 1
+    FAIL: 1,
+    PENDING: 2
 };
 
 class OrderInfo {
@@ -10,17 +11,18 @@ class OrderInfo {
     static get orderStatus() {
         return orderStatus;
     }
-    constructor(first_name, last_name, country_code, phone_number, currency, price) {
-        this._first_name = first_name == null ? "" : first_name;
-        this._last_name = last_name == null ? "" : last_name;
-        this._country_code = country_code == null ? "" : country_code;
-        this._phone_number = phone_number == null ? "" : phone_number;
-        this._currency = currency == null ? "" : currency;
-        this._price = price == null ? "" : price;
+
+    constructor(customerInfo) {
+        this._first_name = customerInfo.first_name;
+        this._last_name = customerInfo.last_name;
+        this._country_code = customerInfo.country_code;
+        this._phone_number = customerInfo.phone_number;
+        this._currency = customerInfo.currency;
+        this._price = customerInfo.price;
 
         // actual data to be stored
         this.ref_code = "";
-        this.order_status = orderStatus.SUCCESS;
+        this.order_status = orderStatus.PENDING;
         this.name = `${this._first_name} ${this._last_name}`;
         this.phone = `(+${this._country_code}) ${this._phone_number}`;
         this.price = `${this._currency} ${this._price}`;

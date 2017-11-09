@@ -42,7 +42,8 @@ $(function(){
                 data: "YY",
                 valid: true,
                 v_hint: ""
-            }
+            },
+            payment_method: "braintree",
         },
         watch: {
             holder_name: {deep: true, handler: function(){} },
@@ -84,6 +85,17 @@ $(function(){
             }
         },
         methods: {
+            set_payment_method: function(currency) {
+                // "braintree" || "paypal"
+                var paypalCurrencies = ["USD", "EUR", "AUD"],
+                    braintreeCurrenies = ["HKD", "JPY", "CNY"];
+
+                if(paypalCurrencies.indexOf(currency) >= 0) {
+                    this.payment_method = "paypal";
+                } else {
+                    this.payment_method = "braintree";
+                }
+            },
             change_month: function(item) {
                 this.expire_month.data = item;
             },
@@ -146,8 +158,14 @@ $(function(){
         watch: {
             first_name: {handler: function(){}, deep: true},
             last_name: {handler: function(){}, deep: true},
-            firs_name: {handler: function(){}, deep: true},
-            first_name: {handler: function(){}, deep: true}
+            phone_number: {handler: function(){}, deep: true},
+            price: {handler: function(){}, deep: true},
+
+            currency: {
+                handler: function(newVal, oldVal) {
+                    credit_card_info.set_payment_method(newVal);
+                }
+            }
         },
         methods: {
             load_validation_error: function(errors) {
@@ -206,20 +224,39 @@ $(function(){
                     that.state = btnState.READY;
 
                     if(data.code == 200) {
-                        
+                        var info = data.info;
+                        var method = info.method;
+
+                        if(method == "paypal") {
+                            // new popup
+                            if(info.status === "success")
+                                window.open(info.redirect_url, '_blank');
+                            else {
+                                // TODO
+                            }
+                        }else { // braintree
+                            if(info.status === "success") {
+                                show_modal_content("Payment Status: <b>Success</b> <br> Reference Code: <b>" + info.ref_code + "</b>");
+                            } else {
+                                show_modal_content("Payment Stauts: <b>Fail</b> <br> Reference Code: <b>" + info.ref_code + "</b>");
+                            }
+                        }
                     }
                     else if(data.code == 600) { // validation error
                         customer_info.load_validation_error(data.info);
                         credit_card_info.load_validation_error(data.info);
-
                     }
                 }).fail(function(){
 
                 });
             }
         }
-    })
+    });
 
+    var show_modal_content = function(content) {
+        $("#modal").modal('show');
+        $('#modal .modal-body').html(content);
+    }
     // jQuery part
     // for widgets' operation
     // use ordinary js grammer

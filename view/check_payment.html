@@ -124,7 +124,7 @@
                             <td>{{ item.name }}</td>
                             <td>{{ item.phone }}</td>
                             <td>{{ item.price }}</td>
-                            <td>{{ item.order_status == 1 ? "FAIL" : "SUCCESS" }}</td>
+                            <td>{{ order_status_text(item.order_status) }}</td>
                         </tr>
                     </tbody>
                 </table>

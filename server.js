@@ -1,14 +1,15 @@
 const Koa    = require("koa"),
       fs     = require("fs"),
       path   = require("path"),
+      ejs    = require("ejs"),
       static = require("koa-static"),
       Router = require("koa-router"),
       bodyParser = require('koa-bodyparser');
 
-const paymentController = require("./controller/payment"),
+const PaymentController = require("./controller/payment"),
       storeController   = require("./controller/store"),
       searchPaymentController = require("./controller/search"),
-
+      OrderInfo = require("./model/orderInfo"),
       utils = require("./utils");
 
 const app = new Koa(),
@@ -16,7 +17,8 @@ const app = new Koa(),
 
 // currently, we don't need page templates at all,
 // so it just returns HTML files
-const render = async (page, postfix) => {
+// 
+const render = async (page, postfix, ejs_params) => {
     const viewDir = "view";
     if( !postfix ) {
         postfix = "html";
@@ -29,11 +31,17 @@ const render = async (page, postfix) => {
             if(err) {
                 reject(err);
             } else {
-                resolve(data);
+                if(ejs_params) {
+                    // use ejs as template engine
+                    resolve(ejs.render(data, ejs_params));
+                } else {
+                    resolve(data);
+                }
             }
         })    
     });
 }
+const paymentController = new PaymentController();
 
 // views
 router.get('/', async (ctx) => {
@@ -52,13 +60,13 @@ router.get("/hello_world", async (ctx) => {
     ctx.body = "Hello, World!";
 });
 
+
 router.get('/404', async (ctx) => {
     ctx.body = await render("404");
 });
 
 // API
 router.post("/api/submit_payment", async (ctx) => {
-    // TODO
     let req_body = ctx.request.body;
 
     if(req_body == null) {
@@ -66,19 +74,72 @@ router.post("/api/submit_payment", async (ctx) => {
     }
 
     try {
-        let result = await paymentController.validate_payment_info(req_body);
-
+        let result = await paymentController.validatePaymentInfo(req_body);
+        
         if(result != null) {
             ctx.body = utils.json_error(600, result);
-            return ;
         } else {
             // continue
-            let submit_info = await paymentController.submit();
-            ctx.body = utils.json_success("submit success");
+            // init REF code
+            let ref_code = utils.generate_ref_code();
+            
+            // save order as PENDING
+            let order_info = paymentController.exportOrderInfo(ref_code);
+            await storeController.saveData(order_info);
+
+            let rtn_data = await paymentController.submitPayment(ref_code);
+            ctx.body = utils.json_success(rtn_data);
         }
     } catch(e) {
-        console.log(e);
         ctx.body = utils.json_error(500, "Fatal Error");
+    }
+});
+
+// Paypal payment page
+router.get("/paypal_payment/:ref_code/:status", async (ctx) => {
+    let status = ctx.params.status;
+    let ref_code = ctx.params.ref_code;
+
+    let payment_id = ctx.query["paymentId"];
+    let payer_id = ctx.query["PayerID"];
+
+    let render_dict = {
+        success: status === "success",
+        ref_code: ref_code,
+        customer_name: "",
+        price: ""
+    };
+
+    try {
+        let data = await storeController.getDictData(ref_code);
+    
+        render_dict.customer_name = data.name;
+        render_dict.price = data.price;
+
+        // if so, there must be fatal errors
+        // return error directly, no need to go on.
+        if(payment_id == null || payer_id == null) {
+            render_dict.success = false;
+            await storeController.modifyDictData(ref_code, "order_status", OrderInfo.orderStatus.FAIL);
+            ctx.body = await render("paypal_payment_status", "html", render_dict);
+            return ;
+        }
+
+        let info = await paymentController.executePaypalPayment(payment_id, payer_id);
+        
+        if(info.state == "success") {
+            await storeController.modifyDictData(ref_code, "order_status", OrderInfo.orderStatus.SUCCESS);
+            ctx.body = await render("paypal_payment_status", "html", render_dict); 
+        } else {
+            render_dict.success = false;
+            await storeController.modifyDictData(ref_code, "order_status", OrderInfo.orderStatus.FAIL);
+            ctx.body = await render("paypal_payment_status", "html", render_dict);
+        }
+    } catch(e) {
+
+        render_dict.success = false;
+        await storeController.modifyDictData(ref_code, "order_status", OrderInfo.orderStatus.FAIL);
+        ctx.body = await render("paypal_payment_status", "html", render_dict);
     }
 });
 

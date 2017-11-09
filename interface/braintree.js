@@ -98,7 +98,7 @@ class BrainTreeInterface {
     
         return new Promise((resolve, reject) => {
             try {
-                this.gateway.transaction.sale(options, (result, err) => {
+                this.gateway.transaction.sale(options, (err, result) => {
                     if(err) {
                         reject(err);
                     } else {

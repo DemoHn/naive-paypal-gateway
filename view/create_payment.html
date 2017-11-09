@@ -31,6 +31,15 @@
     .invalid .invalid-hint {
         display: block;
     }
+
+    div.payment_method {
+        margin: 1rem 0.5rem;
+    }
+
+    div.des {
+        font-size: 13px;
+        color: #777;
+    }
     </style>
 </head>
 
@@ -333,69 +342,92 @@
                 </form>
             </div>
         </div>
-        <p></p>
-        <div class="card" id="credit_card_info">
-            <div class="card-body">
-                <h5 style="color: #666;">Credit Card Info</h5>
+        
+        <div id="credit_card_info">
 
-                <form>
-                    <div class="form-group row">
-                        <label for="holder_name" class="col-sm-2 col-form-label">Card Holder Name</label>
-                        <div class="col-sm-5" :class="{invalid: !holder_name.valid }">
-                            <input type="text" class="form-control" id="holder_name" v-model="holder_name.data" placeholder="Same as name on credit card">
-                            <div class="invalid-hint">{{ holder_name.v_hint }}</div>
-                        </div>    
+            <div class="payment_method">
+                <div data-method="braintree" v-if="payment_method == 'braintree'">
+                    <div class="row">
+                        <label for="" class="col-sm-2 col-form-label"><i>Payment Method:</i></label>
+                        <img src="/img/bt-logo.png" alt="" style="height: 18px; margin-top: 8px; margin-left: -10px;">
                     </div>
-                    
-                    <div class="form-group row">
-                        <label for="card_number" class="col-sm-2 col-form-label">Card Number</label>
-                        <div class="col-sm-5" :class="{invalid: !card_number.valid }">
-                            <input type="text" class="form-control" id="card_number" v-model="card_number.data" placeholder="13-18 digits">
-                            <div class="invalid-hint">{{ card_number.v_hint }}</div>
-                        </div>    
+                    <div class="des">Please fill your Credit Card information in the following form:</div>
+                </div>
+                
+                <div data-method="paypal" v-if="payment_method == 'paypal'">
+                    <div class="row">
+                        <label for="" class="col-sm-2 col-form-label"><i>Payment Method:</i></label>
+                        <img src="/img/paypal-logo.png" alt="" style="height: 18px; margin-top: 11px; margin-left: -10px;">
                     </div>
-
-                    <div class="form-group row">
-                        <label for="expire" class="col-sm-2 col-form-label">Expire at</label>
-                        <div class="col-sm-5">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{expire_month.data}}
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#" v-for="item in valid_months" @click="change_month(item)">{{item}}</a>
-                                </div>
-                            </div>
-                            <span style="margin-left: 0.5rem; margin-right: 0.5rem; "> / </span>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{expire_year.data}}
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#" v-for="item in valid_years" @click="change_year(item)">{{item}}</a>
-                                </div>
-                            </div>
-                            <div :class="{invalid: !expire_month.valid}">
-                                <div class="invalid-hint">{{expire_month.v_hint}}</div>
-                            </div>
-                            <div :class="{invalid: !expire_year.valid}">
-                                <div class="invalid-hint">{{expire_year.v_hint}}</div>
-                            </div>
-                        </div>    
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="expire" class="col-sm-2 col-form-label">CCV 
-                            <sup><span class="oi oi-info" style="color: blue; cursor: pointer;" data-toggle="tooltip" data-placement="bottom" title="Usually CCV is located in your credit card's B side."></span></sup>
-                        </label>
-                        <div class="col-sm-2" :class="{invalid: !security_code.valid }">
-                            <input type="text" class="form-control" id="expire" v-model="security_code.data" placeholder="3~4 digits">
-                            <div class="invalid-hint">{{ security_code.v_hint }}</div>
-                        </div>    
-                    </div>
-                </form>
+                    <div class="des">Notice: after clicking "Submit", Paypal Payment Form will popup and you should finish this transaction there.</div>
+                </div>
             </div>
+
+            <div class="card" v-if="payment_method == 'braintree'">
+                <div class="card-body">
+                    <h5 style="color: #666;">Credit Card Info</h5>
+
+                    <form>
+                        <div class="form-group row">
+                            <label for="holder_name" class="col-sm-2 col-form-label">Card Holder Name</label>
+                            <div class="col-sm-5" :class="{invalid: !holder_name.valid }">
+                                <input type="text" class="form-control" id="holder_name" v-model="holder_name.data" placeholder="Same as name on credit card">
+                                <div class="invalid-hint">{{ holder_name.v_hint }}</div>
+                            </div>    
+                        </div>
+                        
+                        <div class="form-group row">
+                            <label for="card_number" class="col-sm-2 col-form-label">Card Number</label>
+                            <div class="col-sm-5" :class="{invalid: !card_number.valid }">
+                                <input type="text" class="form-control" id="card_number" v-model="card_number.data" placeholder="13-18 digits">
+                                <div class="invalid-hint">{{ card_number.v_hint }}</div>
+                            </div>    
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="expire" class="col-sm-2 col-form-label">Expire at</label>
+                            <div class="col-sm-5">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{expire_month.data}}
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#" v-for="item in valid_months" @click="change_month(item)">{{item}}</a>
+                                    </div>
+                                </div>
+                                <span style="margin-left: 0.5rem; margin-right: 0.5rem; "> / </span>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{expire_year.data}}
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#" v-for="item in valid_years" @click="change_year(item)">{{item}}</a>
+                                    </div>
+                                </div>
+                                <div :class="{invalid: !expire_month.valid}">
+                                    <div class="invalid-hint">{{expire_month.v_hint}}</div>
+                                </div>
+                                <div :class="{invalid: !expire_year.valid}">
+                                    <div class="invalid-hint">{{expire_year.v_hint}}</div>
+                                </div>
+                            </div>    
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="expire" class="col-sm-2 col-form-label">CCV 
+                                <sup><span class="oi oi-info" style="color: blue; cursor: pointer;" data-toggle="tooltip" data-placement="bottom" title="Usually CCV is located in your credit card's B side."></span></sup>
+                            </label>
+                            <div class="col-sm-2" :class="{invalid: !security_code.valid }">
+                                <input type="text" class="form-control" id="expire" v-model="security_code.data" placeholder="3~4 digits">
+                                <div class="invalid-hint">{{ security_code.v_hint }}</div>
+                            </div>    
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
+        
         <p></p>
         <div class="card" style="border: none;">
             <div class="card-body">
@@ -408,9 +440,9 @@
     </div>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content"> 
+        <div class="modal-content" id=""> 
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Submit Payment</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -418,11 +450,9 @@
                 </button>
             </div>
             <div class="modal-body">
-                2333
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Get it!</button>
             </div>
         </div>
     </div>

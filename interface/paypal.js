@@ -130,6 +130,11 @@ class PayPalInterface {
      * 
      * @param customerInfo: customerInfo
      * @param creditcardInfo: creditcardInfo
+     * 
+     * @return info = {
+     *      "status": "success" || "fail",
+     *      "redirect_url": <URL>
+     * }
     */
     async createPayment(customerInfo, creditcardInfo, refCode) {
         if(!customerInfo instanceof CustomerInfo) {
@@ -139,6 +144,12 @@ class PayPalInterface {
         if(!creditcardInfo instanceof CreditcardInfo) {
             return new Promise((resolve, reject) => { reject(new Error("invalid CreditCard")) } );
         }
+
+        // @return model
+        let return_info = {
+            "status": "",
+            "redirect_url": ""
+        };
 
         try {
             // if token expired, refresh it!
@@ -159,12 +170,11 @@ class PayPalInterface {
                     },
                     "payment_options": {
                         "allowed_payment_method": "INSTANT_FUNDING_SOURCE"
-                    },
-                    "soft_descriptor": "ECHI5786786",
+                    }
                 }],
                 "redirect_urls": {
-                    "return_url": `http://localhost:${utils.get_PORT()}/paypal_payment/success`,
-                    "cancel_url": `http://localhost:${utils.get_PORT()}/paypal_payment/fail`
+                    "return_url": `http://localhost:${utils.get_PORT()}/paypal_payment/${refCode}/success`,
+                    "cancel_url": `http://localhost:${utils.get_PORT()}/paypal_payment/${refCode}/fail`
                 }
             };
 
@@ -180,8 +190,21 @@ class PayPalInterface {
             };
 
             let resp = await request(options);
-            console.log(resp);
-            return Promise.resolve(resp);
+            if(resp.state === "created") {
+                return_info.status = "success";
+
+                this.appendPendingTransaction(return_info.id, refCode);
+
+                for(let index in resp.links) {
+                    if(resp.links[index]["rel"] == "approval_url") {
+                        return_info.redirect_url = resp.links[index]["href"];
+                        break;
+                    }
+                }
+            } else {
+                return_info.status = "fail";
+            }
+            return Promise.resolve(return_info);
         } catch(e) {
             return Promise.reject(e);
         }
@@ -199,7 +222,10 @@ class PayPalInterface {
         if(payment_id == null || payer_id == null) {
             return Promise.reject(new Error("invalid payment_id or payer_id!"));
         }
-
+        // @return model
+        let return_info = {
+            "state": ""
+        };
         try {
             // if token expired, refresh it!
             if(this.tokenExpired()) {
@@ -221,9 +247,19 @@ class PayPalInterface {
                 tiemout: this.timeout
             };
 
-            let resp = request(options);
-
-            return Promise.resolve(resp);
+            return new Promise((resolve, reject) => {
+                request(options).then((resp) => {
+                    if(resp.state === "approved") {
+                        return_info.state = "success";
+                    } else {
+                        return_info.state = "failed";
+                    }
+                    resolve(return_info);
+                }).catch((e) => {
+                    reject(e);
+                });
+            });
+            
         } catch(e) {
             return Promise.reject(e);
         }
