@@ -44,9 +44,16 @@ The gateway supports both BrainTree and PayPal API.
 As requirement doc said, when payment currency is USD, AUD or EUR, use Paypal;  
 If currency is JPY, CNY or HKD, use BrainTree instead.  
 
+- __Paypal__
+    TODO
+- __BrainTree__
+    TODO
+
+## Structures and Routes
+    TODO
 
 ## Known Issues
-- BrainTree API
+- When create a payment via BrainTree API, currencies are controlled by BrainTree Account instead of user input. That is, for example, you think you have paid "HKD 10.00", however you actually paid "USD 10.00" if the BrainTree Account is an USD account!  
 
 ## Contribution
 
