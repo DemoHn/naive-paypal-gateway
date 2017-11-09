@@ -78,6 +78,8 @@ router.post("/api/submit_payment", async (ctx) => {
         
         if(result != null) {
             ctx.body = utils.json_error(600, result);
+        } else if( !paymentController.validateAMEXinUSDrule() ) { 
+            ctx.body = utils.json_error(601, ""); // using AMEX card but not in USD
         } else {
             // continue
             // init REF code
@@ -88,9 +90,19 @@ router.post("/api/submit_payment", async (ctx) => {
             await storeController.saveData(order_info);
 
             let rtn_data = await paymentController.submitPayment(ref_code);
+
+            // braintree only
+            if(rtn_data.method == "braintree") {
+                if(rtn_data.status == "success") {
+                    await storeController.modifyDictData(ref_code, "order_status", OrderInfo.orderStatus.SUCCESS); 
+                } else {
+                    await storeController.modifyDictData(ref_code, "order_status", OrderInfo.orderStatus.FAIL);
+                }
+            }
             ctx.body = utils.json_success(rtn_data);
         }
     } catch(e) {
+        console.log(e)
         ctx.body = utils.json_error(500, "Fatal Error");
     }
 });
@@ -170,8 +182,10 @@ router.get("/api/search_payment_record", async (ctx) => {
             ctx.body = utils.json_error(600, result);
         } else {
             if(search_keyword == "") {
+                
                 // list all data
                 let data = await storeController.listData(cursor, limit);
+                
                 ctx.body = utils.json_success(data);
             } else if(search_type === "name" || search_type === "ref_code") {
                 let data = await storeController.findData(search_type, search_keyword, cursor, limit);

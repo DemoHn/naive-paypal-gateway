@@ -219,6 +219,9 @@ $(function(){
                 var merged_payload = {};
                 merged_payload = $.extend(customer_info.export(), credit_card_info.export());
                 
+                customer_info.load_validation_error({});
+                credit_card_info.load_validation_error({});
+
                 var that = this;
                 $.post("/api/submit_payment", merged_payload, null, "json").done(function(data){
                     that.state = btnState.READY;
@@ -226,6 +229,7 @@ $(function(){
                     if(data.code == 200) {
                         var info = data.info;
                         var method = info.method;
+                        // clear validation errors
 
                         if(method == "paypal") {
                             // new popup
@@ -245,9 +249,12 @@ $(function(){
                     else if(data.code == 600) { // validation error
                         customer_info.load_validation_error(data.info);
                         credit_card_info.load_validation_error(data.info);
+                    } else if(data.code == 601) { //amex
+                        window.alert("Sorry, AMEX card is possible to use only for USD!");
                     }
                 }).fail(function(){
-
+                    window.alert("Fatal Error!");
+                    window.location.reload();
                 });
             }
         }
@@ -279,5 +286,9 @@ $(function(){
         // set dropdown-toggle button
         var currency = $(this).html();
         customer_info.set_currency(currency);
+    });
+
+    $("#redirect").click(function(){
+        window.location.href = '/check_payment';
     });
 });

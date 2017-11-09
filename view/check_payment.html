@@ -75,8 +75,8 @@
                         <label class="col-sm-2 col-form-label"><b>Search By:</b></label>
 
                         <div class="col-sm-6" :class="{valid: !search_type.valid}">
-                            <label class="custom-control custom-radio" style="margin-top: 0.5rem;" selected>
-                                <input id="radio1" name="radio" type="radio" class="custom-control-input" @click="change_search_type('name')">
+                            <label class="custom-control custom-radio" style="margin-top: 0.5rem;" >
+                                <input id="radio1" name="radio" type="radio" class="custom-control-input" @click="change_search_type('name')" checked>
                                 <span class="custom-control-indicator"></span>
                                 <span class="custom-control-description">Customer Name</span>
                             </label>

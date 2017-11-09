@@ -12,7 +12,7 @@ $(function() {
                 v_hint: ""
             },
             search_type: {
-                data: "",
+                data: "name",
                 valid: true,
                 v_hint: ""
             },
@@ -132,6 +132,9 @@ $(function() {
                     // TODO
                 });
             }
+        },
+        mounted: function() {
+            this.execute_search();
         }
     }) 
 });

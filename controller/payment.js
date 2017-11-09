@@ -103,6 +103,15 @@ class PaymentController {
 
         return info;
     }
+
+    validateAMEXinUSDrule() {
+        if(this.customerInfo.currency !== "USD" && 
+            this.creditcardInfo.get_card_type() === "AmericanExpress") {
+            return false;
+        } else {
+            return true;
+        }
+    }
     /**
      * @brief submit payment
      * For braintree, since we use direct pay, just return payment result

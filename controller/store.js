@@ -190,10 +190,10 @@ module.exports = {
 
             for(let index in ref_code_list) {
                 let ref_code = ref_code_list[index];
-
-                let r = await findRedisData.get_item_by_ref_code(ref_code);
+                let true_ref_code = ref_code.substr(REF_prefix.length);
+                let r = await findRedisData.get_item_by_ref_code(true_ref_code);
                 
-                data_list.data[ref_code] = r;
+                data_list.data[true_ref_code] = r;
             }
             
             return Promise.resolve(data_list);
@@ -278,7 +278,6 @@ module.exports = {
     async modifyDictData(ref_code, key, new_data) {
         return new Promise((resolve, reject) => {
             client.hset([REF_prefix + ref_code, key, new_data], (err, replies) => {
-                console.log(err);
                 if(err) {
                     reject(err);
                 } else {

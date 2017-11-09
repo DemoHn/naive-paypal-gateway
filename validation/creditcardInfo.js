@@ -9,7 +9,7 @@ const utils = require("../utils");
 const creditCardTypes = {
     MASTER: "Master",
     VISA: "Visa",
-    AMEX: "AmericanExpreess",
+    AMEX: "AmericanExpress",
     OTHERS: "Others"
 };
 
