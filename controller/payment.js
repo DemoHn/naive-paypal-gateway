@@ -149,7 +149,6 @@ class PaymentController {
             } else if(this.getPaymentType(this.customerInfo.currency) == paymentMethod.BRAINTREE) {
                 _model.method = paymentMethod.BRAINTREE;
                 let result = await this.braintreeInterface.createPayment(this.customerInfo, this.creditcardInfo);
-                
                 if(result != null && result["success"] == true) {
                     _model["status"] = "success";
                 } else {
